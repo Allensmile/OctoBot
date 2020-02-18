@@ -102,6 +102,10 @@ EXTENDED_DATA_FILES = {
 class AbstractBacktestingTest:
     __metaclass__ = ABCMeta
 
+    def __init__(self):
+        self.config = {}
+        self.strategy_evaluator_class = None
+
     def initialize_with_strategy(self, strategy_evaluator_class, config):
         self.config = config
         self.strategy_evaluator_class = strategy_evaluator_class

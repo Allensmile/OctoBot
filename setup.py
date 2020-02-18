@@ -44,6 +44,10 @@ packages_list = ["octobot.evaluator_factory",
                  "octobot.initializer",
                  "octobot.task_manager",
                  "octobot.octobot_api",
+                 "backtesting.abstract_backtesting_test",
+                 "backtesting.strategy_optimizer.strategy_test_suite",
+                 "backtesting.strategy_optimizer.test_suite_result",
+                 "backtesting.strategy_optimizer.strategy_optimizer",
                  "octobot.octobot"]
 
 ext_modules = [

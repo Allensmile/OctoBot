@@ -59,11 +59,11 @@ class TestSuiteResult:
         return TestSuiteResultSummary(self)
 
     def get_result_string(self, details=True):
-        details = f" details: (profitabilities (bot, market):{self.run_profitabilities}, trades: " \
-                  f"{self.trades_counts})" if details else ""
+        details_str = f" details: (profitabilities (bot, market):{self.run_profitabilities}, trades: " \
+                      f"{self.trades_counts})" if details else ""
         return (f"{self.get_evaluators_without_strategy()} on {self.time_frames} at risk: {self.risk} "
                 f"score: {self.get_average_score():f} (the higher the better) "
-                f"average trades: {self.get_average_trades_count():f}{details}")
+                f"average trades: {self.get_average_trades_count():f}{details_str}")
 
     def get_result_dict(self, index=0):
         return self.convert_result_into_dict(index, self.get_evaluators_without_strategy(), self.time_frames,
@@ -86,12 +86,6 @@ class TestSuiteResultSummary:
     def __init__(self, test_suite_result):
         self.evaluators = test_suite_result.get_evaluators_without_strategy()
         self.risk = test_suite_result.risk
-
-    def get_evaluators(self):
-        return self.evaluators
-
-    def get_risk(self):
-        return self.risk
 
     def get_result_string(self):
         return f"{self.evaluators} risk: {self.risk}"

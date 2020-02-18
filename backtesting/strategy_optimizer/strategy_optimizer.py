@@ -57,7 +57,6 @@ class StrategyOptimizer:
         self.strategy_class = get_class_from_string(strategy_name, StrategyEvaluator,
                                                     Strategies, evaluator_parent_inspection)
         self.run_results = []
-        self.results_report = []
         self.sorted_results_by_time_frame = {}
         self.sorted_results_through_all_time_frame = {}
         self.all_time_frames = []
@@ -87,7 +86,6 @@ class StrategyOptimizer:
 
             self.errors = set()
             self.run_results = []
-            self.results_report = []
             self.sorted_results_by_time_frame = {}
             self.sorted_results_through_all_time_frame = {}
 
@@ -178,7 +176,7 @@ class StrategyOptimizer:
         no_error = asyncio.run(self.current_test_suite.run_test_suite(self.current_test_suite),
                                debug=FORCE_ASYNCIO_DEBUG_OPTION)
         if not no_error:
-            self.errors = self.errors.union(set(str(e) for e in self.current_test_suite.get_exceptions()))
+            self.errors = self.errors.union(set([str(e) for e in self.current_test_suite.exceptions]))
         run_result = self.current_test_suite.get_test_suite_result()
         self.run_results.append(run_result)
 
@@ -198,7 +196,12 @@ class StrategyOptimizer:
 
         result_list = [(result, trades_and_rank[RANK], mean(trades_and_rank[TRADES]))
                        for result, trades_and_rank in results_through_all_time_frame.items()]
-        self.sorted_results_through_all_time_frame = sorted(result_list, key=lambda res: res[RANK])
+
+        # inner function to replace uncythonizable lambda expression
+        def _sorting_key(elem):
+            return elem[RANK]
+
+        self.sorted_results_through_all_time_frame = sorted(result_list, key=_sorting_key)
 
     def print_report(self):
         self.logger.info("Full execution sorted results: Minimum time frames are defining the range of the run "
@@ -229,13 +232,13 @@ class StrategyOptimizer:
         return self.get_overall_progress() != 100
 
     def get_current_test_suite_progress(self):
-        return self.current_test_suite.get_progress() if self.current_test_suite else 0
+        return self.current_test_suite.current_progress if self.current_test_suite else 0
 
     def get_report(self):
         # index, evaluators, risk, score, trades
         if self.sorted_results_through_all_time_frame:
-            results = [TestSuiteResult.convert_result_into_dict(rank, result[CONFIG].get_evaluators(), "",
-                                                                result[CONFIG].get_risk(), result[RANK],
+            results = [TestSuiteResult.convert_result_into_dict(rank, result[CONFIG].evaluators, "",
+                                                                result[CONFIG].risk, result[RANK],
                                                                 round(result[TRADES_IN_RESULT], 5))
                        for rank, result in enumerate(self.sorted_results_through_all_time_frame[0:100])]
         else:

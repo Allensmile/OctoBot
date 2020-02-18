@@ -51,12 +51,6 @@ class StrategyTestSuite(AbstractBacktestingTest):
                                self.config[CONFIG_FORCED_EVALUATOR],
                                self.strategy_evaluator_class.get_name())
 
-    def get_progress(self):
-        return self.current_progress
-
-    def get_exceptions(self):
-        return self.exceptions
-
     async def run_test_suite(self, strategy_tester):
         self.exceptions = []
         tests = [self.test_slow_downtrend, self.test_sharp_downtrend, self.test_flat_markets,
@@ -67,8 +61,6 @@ class StrategyTestSuite(AbstractBacktestingTest):
             try:
                 await test(strategy_tester)
                 self.current_progress = int((i+1)/nb_tests*100)
-            # except NoCandleDataForThisTimeFrameException:
-            #     pass
             except Exception as e:
                 print(f"Exception when running test {test.__name__}: {e}")
                 self.logger.exception(e)
