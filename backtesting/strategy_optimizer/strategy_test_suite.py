@@ -103,14 +103,14 @@ class StrategyTestSuite(AbstractBacktestingTest):
         skip_this_run = False
         if independent_backtesting is not None:
             exchange_manager_ids = get_independent_backtesting_exchange_manager_ids(independent_backtesting)
-            for exchange_manager in get_exchange_managers_from_exchange_ids(exchange_manager_ids):
-                try:
+            try:
+                for exchange_manager in get_exchange_managers_from_exchange_ids(exchange_manager_ids):
                     _, profitability, _, market_average_profitability, _ = get_profitability_stats(exchange_manager)
                     # Only one exchange manager per run
                     profitability_result = (profitability, market_average_profitability)
                     trades_count += len(get_trade_history(exchange_manager))
-                except AttributeError:
-                    skip_this_run = True
+            except (AttributeError, KeyError):
+                skip_this_run = True
             if not skip_this_run:
                 if profitability_result is None:
                     raise RuntimeError("Error with independent backtesting: no available exchange manager")
